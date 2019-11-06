@@ -19,17 +19,18 @@ void loop() {
 	}
 	numOutputted = 0;
 	for(byte i = 0; i < 8; i++) {
-		if(sensorEnabled[i]) {
-			reading = takeReading(i);
-			outputShort(reading);
-			numOutputted++;
-			// if its not the last sensor to be outputted print the delimiter
-			if(numOutputted < numSensors) {
-				Serial.print('\t');
-			}
-			else {
-				Serial.println();
-			}
+		if(!sensorEnabled[i]) {
+			continue;
+		}
+		reading = takeReading(i);
+		outputShort(reading);
+		numOutputted++;
+		// if its not the last sensor to be outputted print the delimiter
+		if(numOutputted < numSensors) {
+			Serial.print('\t');
+		}
+		else {
+			Serial.println();
 		}
 	}
 }
