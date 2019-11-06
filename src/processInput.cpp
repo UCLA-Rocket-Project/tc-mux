@@ -1,50 +1,49 @@
 #include "defines.h"
-int ADDR_PINS[3] = {0, 1, 2};
 bool sensorEnabled[8] = {false, false, false, false, false, false, false, false};
 byte numSensors = 0;
-char readBuffer[16];
+char cmdBuffer[16];
 byte bufferIndex = 0;
 
-bool processBuffer();
+void processBuffer();
 void setAllSensors(bool b);
 bool readChar(char c) {
 	if(c == '$') {
 		bufferIndex = 0;
 		return false;
 	}
-	if(bufferIndex >= sizeof(readBuffer)) {
+	if(bufferIndex >= sizeof(cmdBuffer)) {
 		return false;
 	}
 	if(c == '\n' || c == '\r') {
-		readBuffer[bufferIndex++] = 0;
-		return processBuffer();
+		cmdBuffer[bufferIndex++] = 0;
+		processBuffer();
+		return true;
 	}
-	readBuffer[bufferIndex++] = c;
+	cmdBuffer[bufferIndex++] = c;
 	return false;
 }
 /**
  * Returns true if the array sensorEnabled has been modified
  **/
-bool processBuffer() {
+void processBuffer() {
 	setAllSensors(false);
 	numSensors = 0;
-	for(byte i = 0; i < sizeof(readBuffer); i++) {
-		char c = readBuffer[i];
+	for(byte i = 0; i < sizeof(cmdBuffer); i++) {
+		char c = cmdBuffer[i];
 		if(c == 0) {
-			return true;
+			return;
 		}
 		if(c == 'a' || c == 'A') {
 			setAllSensors(true);
-			return true;
+			return;
 		}
 		byte sensorId = c - '0';
 		if(sensorId >= 8) {
-			return false;
+			return;
 		}
 		sensorEnabled[sensorId] = true;
 		numSensors++;
 	}
-	return true;
 }
 void setAllSensors(bool b) {
 	for(byte i = 0; i < 8; i++) {
