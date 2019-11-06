@@ -1,5 +1,6 @@
 #include "defines.h"
 
+long lastRun;
 void setup() {
 	pinMode(LOWBIT_PIN, OUTPUT);
 	pinMode(MIDDLEBIT_PIN, OUTPUT);
@@ -7,10 +8,12 @@ void setup() {
 	pinMode(ANALOG_PIN, INPUT);
 
 	Serial.begin(115200);
+	lastRun = millis();
 }
 char c;
 byte numOutputted;
 uint16_t reading;
+long thisRun;
 void loop() {
 	while( ( c = Serial.read() ) != -1 ) {
 		if(readChar(c)) {
@@ -25,12 +28,10 @@ void loop() {
 		reading = takeReading(i);
 		outputShort(reading);
 		numOutputted++;
-		// if its not the last sensor to be outputted print the delimiter
-		if(numOutputted < numSensors) {
-			Serial.print('\t');
-		}
-		else {
-			Serial.println();
-		}
+		Serial.print('\t');
 	}
+	// the last column will be the delta time (in decimal milliseconds)
+	thisRun = millis();
+	Serial.println(thisRun - lastRun);
+	lastRun = thisRun;
 }
