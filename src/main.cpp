@@ -11,7 +11,6 @@ void setup() {
 	lastRun = millis();
 }
 char c;
-byte numOutputted;
 uint16_t reading;
 long thisRun;
 void loop() {
@@ -20,14 +19,20 @@ void loop() {
 			outputLastCmd();
 		}
 	}
-	numOutputted = 0;
 	for(byte i = 0; i < 8; i++) {
 		if(!sensorEnabled[i]) {
 			continue;
 		}
 		reading = takeReading(i);
-		outputShort(reading);
-		numOutputted++;
+		if(outputType == OUTPUT_MV) {
+			outputMv(reading);
+		}
+		else if(outputType == OUTPUT_C) {
+			outputC(reading);
+		}
+		else if(outputType == OUTPUT_F) {
+			outputF(reading);
+		}
 		Serial.print('\t');
 	}
 	// the last column will be the delta time (in decimal milliseconds)

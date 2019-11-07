@@ -1,13 +1,23 @@
 #include "defines.h"
-bool sensorEnabled[8] = {false, false, false, false, false, false, false, false};
+bool sensorEnabled[8] = { false };
 byte numSensors = 0;
 char cmdBuffer[16];
 byte bufferIndex = 0;
+byte nextOutputType;
 
 void processBuffer();
 void setAllSensors(bool b);
 bool readChar(char c) {
-	if(c == '$') {
+	if(c == 'V' || c == 'F' || c == 'C') {
+		if(c == 'V') {
+			nextOutputType = OUTPUT_MV;
+		}
+		else if(c == 'F') {
+			nextOutputType = OUTPUT_F;
+		}
+		else if(c == 'C') {
+			nextOutputType = OUTPUT_C;
+		}
 		bufferIndex = 0;
 		return false;
 	}
@@ -26,6 +36,7 @@ bool readChar(char c) {
  * Returns true if the array sensorEnabled has been modified
  **/
 void processBuffer() {
+	outputType = nextOutputType;
 	setAllSensors(false);
 	numSensors = 0;
 	for(byte i = 0; i < sizeof(cmdBuffer); i++) {
