@@ -1,10 +1,8 @@
 #include "defines.h"
+char writeBuffer[5];
 void outputShort(uint16_t val) {
-	byte lowByte, highByte;
-	lowByte = val & 0xFF;
-	highByte = (val >> 8) & 0xFF;
-	Serial.print(highByte, HEX);
-	Serial.print(lowByte, HEX);
+	sprintf(writeBuffer, "%04d", val);
+	Serial.print(writeBuffer);
 }
 void outputLastCmd() {
 	// just dump the command buffer (using a for loop for bounds check)
